@@ -1,0 +1,27 @@
+service: react-ssr-lambda-prototype
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: us-west-2
+  environment:
+    NODE_ENV: development
+
+functions:
+  server:
+    handler: server/index.server
+    events:
+      - http: GET /
+      - http: GET /{proxy+}
+
+plugins:
+  - serverless-offline # Used for local development to mimic a lambda environment and api gateway config
+  - serverless-bundle # Includes everything needed to webpack your es6 code to work in a nodejs environemnt. (Lambdas run in a nodejs environment)
+  - serverless-apigw-binary # A package used to configure the AWS api gateway to allow extra file types through, like PNGs.
+
+custom:
+  serverless-offline: # Used for local development to mimic a lambda environment and api gateway config
+    httpPort: 3000
+  apigwBinary:
+    types:
+      - '*/*' # Basically, tell the API gateway to allow all file types/content types through.
